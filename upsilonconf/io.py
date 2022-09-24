@@ -16,55 +16,6 @@ __all__ = ["from_cli", "load", "save"] + [
 DEFAULT_NAME = "config.json"
 
 
-def load_json(path: Path) -> Mapping[str, Any]:
-    """
-    Read config from a JSON file.
-
-    Parameters
-    ----------
-    path : Path
-        Path to a readable JSON file.
-
-    Returns
-    -------
-    config: Mapping
-        A mapping constructed from the data in the file.
-    """
-    from json import load
-
-    with open(path, "r") as fp:
-        return load(fp)
-
-
-def save_json(
-    conf: Mapping[str, Any], path: Path, indent: int = 2, sort_keys: bool = False
-):
-    """
-    Write config to a JSON file.
-
-    Parameters
-    ----------
-    conf : Mapping
-        The configuration object to save.
-    path : Path
-        Path to a writeable JSON file.
-    indent : int, optional
-        The number of spaces to use for indentation in the output file.
-    sort_keys : bool, optional
-        Whether keys should be sorted before writing to the output file.
-    """
-    from json import dump
-
-    kwargs = {
-        "default": lambda o: o.__getstate__(),
-        "indent": indent,
-        "sort_keys": sort_keys,
-    }
-
-    with open(path, "w") as fp:
-        dump(conf, fp, **kwargs)
-
-
 @optional_dependency_to("read YAML files", "pyyaml")
 def load_yaml(path: Path) -> Mapping[str, Any]:
     """
