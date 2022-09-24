@@ -1,55 +1,10 @@
 from pathlib import Path
-from typing import Union, Any, Sequence, Mapping, Callable, overload, Tuple
+from typing import Union, Any, Mapping
 
 from .config import Configuration
 
 
-__all__ = ["from_cli", "load", "save"] + [
-    "_".join([kind, fmt])
-    for kind in ("load", "save")
-    for fmt in ("json", "yaml", "dir")
-]
-
-@overload
-def _get_io_function(
-    path: Path, write: bool = False
-) -> Callable[[Path], Mapping[str, Any]]:
-    ...
-
-
-@overload
-def _get_io_function(
-    path: Path, write: bool = True
-) -> Callable[[Mapping[str, Any], Path], None]:
-    ...
-
-
-def _get_io_function(path: Path, write: bool = False):
-    """
-    Retrieve IO functions to read/write config files at a given path.
-
-    Parameters
-    ----------
-    path: Path
-        Path to deduct the correct IO functions from.
-    write: bool, optional
-        Return function to write configs if `True`,
-        otherwise a function for reading configs is returned.
-
-    Returns
-    -------
-    io_func : Path -> Mapping
-        Function for reading/writing config files from/to path.
-    """
-    ext = path.suffix.lower()
-    if ext == "":
-        return save_dir if write else load_dir
-    if ext == ".json":
-        return save_json if write else load_json
-    elif ext == ".yaml":
-        return save_yaml if write else load_yaml
-
-    raise ValueError(f"unknown config file extension: '{ext}'")
+__all__ = ["load", "save"]
 
 
 def __replace_in_keys(
@@ -119,7 +74,7 @@ def _replace_in_keys(
 
 
 def load(
-    path: Union[Path, str], key_modifiers: Mapping[str, str] = {}
+    path: Union[Path, str], loader, key_modifiers: Mapping[str, str] = {}
 ) -> Configuration:
     """
     Read configuration from a file or directory.
@@ -139,14 +94,14 @@ def load(
         A configuration object with the values as provided in the file.
     """
     path = Path(path).expanduser().resolve()
-    _load = _get_io_function(path, write=False)
-    config = _replace_in_keys(_load(path), key_modifiers)
+    config = _replace_in_keys(loader.load(path), key_modifiers)
     return Configuration(**config)
 
 
 def save(
     config: Mapping[str, Any],
     path: Union[Path, str],
+    dumper,
     key_modifiers: Mapping[str, str] = {},
 ) -> None:
     """
@@ -164,7 +119,6 @@ def save(
         value.
     """
     path = Path(path).expanduser().resolve()
-    _save = _get_io_function(path, write=True)
     path.parent.mkdir(exist_ok=True, parents=True)
     config = _replace_in_keys(config, key_modifiers)
-    return _save(config, path)
+    return dumper.save(config, path)
