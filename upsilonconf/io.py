@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Union, Any, Sequence, Mapping, Callable, overload, Tuple
 
 from .config import Configuration
-from ._optional_dependency import optional_dependency_to
 
 
 __all__ = ["from_cli", "load", "save"] + [
@@ -14,51 +13,6 @@ __all__ = ["from_cli", "load", "save"] + [
 ]
 
 DEFAULT_NAME = "config.json"
-
-
-@optional_dependency_to("read YAML files", "pyyaml")
-def load_yaml(path: Path) -> Mapping[str, Any]:
-    """
-    Read config from a YAML file.
-
-    Parameters
-    ----------
-    path : Path
-        Path to a readable YAML file.
-
-    Returns
-    -------
-    config: Mapping
-        A mapping constructed from the data in the file.
-    """
-    from upsilonconf._yaml import load
-
-    with open(path, "r") as fp:
-        return load(fp)
-
-
-@optional_dependency_to("write YAML files", "pyyaml")
-def save_yaml(
-    conf: Mapping[str, Any], path: Path, indent: int = 2, sort_keys: bool = False
-):
-    """
-    Write config to a YAML file.
-
-    Parameters
-    ----------
-    conf : Mapping
-        The configuration object to save.
-    path : Path
-        Path to a writeable YAML file.
-    indent : int, optional
-        The number of spaces to use for indentation in the output file.
-    sort_keys : bool, optional
-        Whether keys should be sorted before writing to the output file.
-    """
-    from upsilonconf._yaml import dump
-
-    with open(path, "w") as fp:
-        dump(conf, fp, indent=indent, sort_keys=sort_keys)
 
 
 def load_dir(path: Path) -> Mapping[str, Any]:
