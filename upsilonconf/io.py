@@ -83,6 +83,8 @@ def load(
     ----------
     path : Path or str
         Path to a readable file.
+    loader : Loader
+        Class used to read file.
     key_modifiers : dict, optional
         A dictionary with replacement strings: The configuration keys will be
         modified, by replacing the string from the key_modifiers key with its
@@ -113,6 +115,8 @@ def save(
         The configuration object to save.
     path : Path or str
         Path to a writeable file.
+    dumper : Dumper
+        Class used to write file.
     key_modifiers : dict, optional
         A dictionary with replacement strings: The configuration keys will be
         modified, by replacing the string from the key_modifiers key with its
