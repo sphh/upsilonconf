@@ -121,4 +121,4 @@ def save(
     path = Path(path).expanduser().resolve()
     path.parent.mkdir(exist_ok=True, parents=True)
     config = _replace_in_keys(config, key_modifiers)
-    return dumper.save(config, path)
+    dumper.save(config, path)
